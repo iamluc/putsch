@@ -24,6 +24,21 @@
     }
 
     initialize = function(settings) {
+
+        // make initial state available as a putsch event
+        if (isHistoryAvalaible()) {
+            var url = document.location.toString();
+
+            var state = {
+                source: 'putsch',
+                type: 'default',
+                container: settings.container,
+                url: url
+            };
+            window.history.replaceState(state, window.document.title, url);
+        }
+
+
         $(window).on('popstate', function(event) {
             popStateHandler(event, settings);
         });
@@ -67,7 +82,9 @@
                 defaultHandler.handleEvent(event, settings);
             });
 
-            $(window).on('putsch:popstate', defaultHandler.popState);
+            $(window)
+                .off('putsch:popstate') // make sure it only fires once
+                .on('putsch:popstate', defaultHandler.popState);
         },
 
         handleEvent: function(event, settings) {
@@ -135,7 +152,9 @@
                 window.history.replaceState(state, window.document.title, url);
             }
 
-            $(window).on('putsch:popstate', bootstrapHandler.popState);
+            $(window)
+                .off('putsch:popstate') // make sure it only fires once
+                .on('putsch:popstate', bootstrapHandler.popState);
         },
 
         handleEvent: function(event, settings) {
